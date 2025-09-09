@@ -1,0 +1,12 @@
+<Configuration status="warn">
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT" >
+            <PatternLayout pattern="%highlight{%d{HH:mm:ss,SSS} %-5p [%c{1.}:%L] (%t) - %m%n}{FATAL=red blink, ERROR=red, WARN=yellow, INFO=blue, DEBUG=green, TRACE=blue}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info" additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Root>
+    </Loggers>
+</Configuration>
