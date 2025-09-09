@@ -41,7 +41,7 @@ public class App {
 
             executor.shutdown();
         }
-        worker.close();
+        worker.stop();
         logger.info("All threads completed!");
 
     }

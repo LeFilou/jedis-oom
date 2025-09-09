@@ -13,7 +13,7 @@ import java.util.Set;
 import static java.util.Arrays.fill;
 import static org.apache.logging.log4j.LogManager.getLogger;
 
-public class RedisWorker {
+class RedisWorker {
 
     private static final Logger logger = getLogger(RedisWorker.class);
 
@@ -44,6 +44,30 @@ public class RedisWorker {
             }
         }
         logger.info("Thread {} completed all operations", threadId);
+    }
+
+
+    public void stop() {
+        try {
+            if (jedisCluster != null) {
+                jedisCluster.close();
+            }
+        } catch (Exception e) {
+            logger.error("Error closing JedisCluster: {}", e.getMessage());
+        }
+    }
+
+    private JedisCluster buildJedisCluster() {
+        return new JedisCluster(
+                Set.of(new HostAndPort(DEFAULT_HOST, DEFAULT_PORT)),
+                2000,
+                2000,
+                10,
+                null,
+                null,
+                new GenericObjectPoolConfig(),
+                false
+        );
     }
 
     /**
@@ -78,7 +102,7 @@ public class RedisWorker {
      * This method tries to avoid immediate JVM crash by allocating memory in chunks and allowing
      * other threads to continue running, making it more likely to encounter memory pressure situations.
      */
-    private static void simulateRealisticOutOfMemoryError(int threadId, int iteration) {
+    private void simulateRealisticOutOfMemoryError(int threadId, int iteration) {
         // Only trigger OOM for certain combinations to make it realistic
         if ((threadId + iteration) % 17 == 0) {
             try {
@@ -111,31 +135,8 @@ public class RedisWorker {
         }
     }
 
-    static JedisCluster buildJedisCluster() {
-        return new JedisCluster(
-                Set.of(new HostAndPort(DEFAULT_HOST, DEFAULT_PORT)),
-                2000,
-                2000,
-                10,
-                null,
-                null,
-                new GenericObjectPoolConfig(),
-                false
-        );
-    }
 
-    public void close() {
-        try {
-            if (jedisCluster != null) {
-                jedisCluster.close();
-            }
-        } catch (Exception e) {
-            logger.error("Error closing JedisCluster: {}", e.getMessage());
-        }
-    }
-
-
-    public static String generateLargeJson(int numberOfEntries) {
+    private static String generateLargeJson(int numberOfEntries) {
         StringBuilder jsonBuilder = new StringBuilder();
         jsonBuilder.append("{\n");
         for (int i = 1; i <= numberOfEntries; i++) {
