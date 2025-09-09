@@ -1,0 +1,11 @@
+services:
+  redis:
+    ports:
+      - "6379:6379"
+      - "7010-7015:7010-7015"
+    image: grokzen/redis-cluster:6.2.6
+    environment:
+      INITIAL_PORT: 7010
+      REDIS_CLUSTER_IP: 0.0.0.0
+      IP: ${IP:-127.0.0.1}
+      ANNOUNCE_IP: ${IP:-127.0.0.1}
